@@ -14,6 +14,7 @@ import { LandedCostBreakdown, RankingWeights, PageId } from '../../types';
 import { calculateLandedCost, computeSupplierRankings, ScenarioType } from '../../utils/calculations';
 import { toPersianDigits, formatPersianNumber, formatPersianCurrency } from '../../utils/formatters';
 import { StatusPill } from '../common/StatusPill';
+import { IncotermsNormalizerModal } from '../tools/IncotermsNormalizerModal';
 
 interface ComparisonPageProps {
   baseItems: LandedCostBreakdown[];
@@ -32,6 +33,7 @@ export const ComparisonPage: React.FC<ComparisonPageProps> = ({
 }) => {
   const [scenario, setScenario] = useState<ScenarioType>('base');
   const [sliders, setSliders] = useState<RankingWeights>(rankingWeights);
+  const [isIncotermsModalOpen, setIsIncotermsModalOpen] = useState(false);
 
   // Recalculate 4 supplier costs under current scenario
   const calculatedItems = useMemo(() => {
@@ -102,7 +104,16 @@ export const ComparisonPage: React.FC<ComparisonPageProps> = ({
                   تغییر پارامترها و محاسبه بی‌درنگ هزینه‌های نهایی (Landed Cost)
                 </p>
               </div>
-              <StatusPill label="محاسبه بلادرنگ" variant="ai" />
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setIsIncotermsModalOpen(true)}
+                  className="px-3 py-1.5 rounded-full bg-[#111111] text-[#F3F94A] text-xs font-bold hover:bg-black transition-all flex items-center gap-1.5"
+                >
+                  <Scale className="w-3.5 h-3.5" />
+                  <span>مبدل اینکوترمز ۲۰۲۰</span>
+                </button>
+                <StatusPill label="محاسبه بلادرنگ" variant="ai" />
+              </div>
             </div>
 
             {/* Segmented Control: پایه | ارز +۵٪ | حمل +۲۰٪ */}
@@ -537,6 +548,19 @@ export const ComparisonPage: React.FC<ComparisonPageProps> = ({
           </div>
         </div>
       </section>
+
+      {/* Incoterms 2020 Normalizer Modal */}
+      <IncotermsNormalizerModal
+        isOpen={isIncotermsModalOpen}
+        onClose={() => setIsIncotermsModalOpen(false)}
+        onApplyToComparison={(term, normalizedPrice) => {
+          onShowToast(
+            `قیمت با شرط ${term} معادل‌سازی شد`,
+            `مظنه CIF معادل ${toPersianDigits(normalizedPrice)} دلار بر تن محاسبه گردید.`,
+            'success'
+          );
+        }}
+      />
     </div>
   );
 };

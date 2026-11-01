@@ -16,6 +16,7 @@ import { Supplier, PageId } from '../../types';
 import { StatusPill } from '../common/StatusPill';
 import { HatchedProgressBar } from '../common/HatchedBar';
 import { toPersianDigits, formatPersianNumber } from '../../utils/formatters';
+import { FakeSupplierDetectorModal } from '../tools/FakeSupplierDetectorModal';
 
 interface SuppliersPageProps {
   suppliers: Supplier[];
@@ -38,6 +39,7 @@ export const SuppliersPage: React.FC<SuppliersPageProps> = ({
   const [maxLeadTime, setMaxLeadTime] = useState<number>(100);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'trust' | 'lead' | 'price'>('trust');
+  const [isFakeDetectorOpen, setIsFakeDetectorOpen] = useState(false);
 
   // Filtered & Sorted suppliers
   const filteredSuppliers = useMemo(() => {
@@ -101,9 +103,17 @@ export const SuppliersPage: React.FC<SuppliersPageProps> = ({
           </div>
         </div>
 
-        <div className="p-5 rounded-3xl bg-[#FFFFFF] border border-[#E5E3DC] flex items-center justify-between">
+        <div
+          onClick={() => setIsFakeDetectorOpen(true)}
+          className="p-5 rounded-3xl bg-[#FFFFFF] border border-[#E5E3DC] flex items-center justify-between cursor-pointer hover:border-[#C53030] transition-all group"
+        >
           <div>
-            <span className="text-xs font-bold text-[#73726E]">واسطه‌های نشانه‌گذاری‌شده (ریسک)</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-bold text-[#73726E]">واسطه‌های نشانه‌گذاری‌شده (ریسک)</span>
+              <span className="text-[10px] bg-[#FDEBE6] text-[#C53030] px-2 py-0.5 rounded-full font-bold">
+                کلیک برای ممیزی
+              </span>
+            </div>
             <div className="text-3xl font-black text-[#C53030] mt-1">
               {toPersianDigits(flaggedCount)} شرکت
             </div>
@@ -111,7 +121,7 @@ export const SuppliersPage: React.FC<SuppliersPageProps> = ({
               مشکوک به شرکت کاغذی / عدم وجود تأسیسات
             </span>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-[#FDEBE6] text-[#C53030] flex items-center justify-center">
+          <div className="w-12 h-12 rounded-2xl bg-[#FDEBE6] text-[#C53030] flex items-center justify-center group-hover:scale-105 transition-transform">
             <AlertTriangle className="w-6 h-6" />
           </div>
         </div>
@@ -418,13 +428,21 @@ export const SuppliersPage: React.FC<SuppliersPageProps> = ({
           </div>
 
           <button
-            onClick={() => onShowToast('گزارش بازرسی شرکت‌های واسطه صادر شد', '', 'info')}
-            className="w-full py-2.5 rounded-full bg-[#F5F4EE] hover:bg-[#E5E3DC] text-xs font-bold text-[#111111] border border-[#E5E3DC] transition-colors"
+            onClick={() => setIsFakeDetectorOpen(true)}
+            className="w-full py-2.5 rounded-full bg-[#111111] hover:bg-black text-xs font-bold text-[#F3F94A] transition-colors flex items-center justify-center gap-2"
           >
-            مشاهده گزارش ساختار مالکیتی و سهام‌داران
+            <ShieldCheck className="w-4 h-4" />
+            <span>اجرای تست جامع ۸ شاخص شرکت‌های جعلی</span>
           </button>
         </div>
       </section>
+
+      {/* Fake Supplier Detector Modal */}
+      <FakeSupplierDetectorModal
+        isOpen={isFakeDetectorOpen}
+        onClose={() => setIsFakeDetectorOpen(false)}
+        suppliers={suppliers}
+      />
     </div>
   );
 };

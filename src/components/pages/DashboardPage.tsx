@@ -15,6 +15,7 @@ import { PageId, Supplier, RFQItem, MonitoringAlert } from '../../types';
 import { Sparkline } from '../common/Sparkline';
 import { StatusPill } from '../common/StatusPill';
 import { toPersianDigits, formatPersianNumber } from '../../utils/formatters';
+import { SupplyRiskMatrix } from '../dashboard/SupplyRiskMatrix';
 
 interface DashboardPageProps {
   onNavigate: (page: PageId, targetId?: string) => void;
@@ -383,6 +384,11 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         </div>
       </section>
 
+      {/* Supply Risk Matrix (Visual 2D Bubble Chart: Likelihood vs Impact) */}
+      <section aria-label="ماتریس ریسک تأمین">
+        <SupplyRiskMatrix onNavigate={onNavigate} />
+      </section>
+
       {/* Samples & Active Risks Bar */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Samples & QC */}
@@ -414,30 +420,41 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           </div>
         </div>
 
-        {/* Active Risks */}
-        <div className="p-5 rounded-3xl bg-[#FFFFFF] border border-[#E5E3DC]">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-[#C53030]" />
-              <h4 className="text-sm font-bold text-[#111111]">ریسک‌های فعال زنجیره تأمین</h4>
-            </div>
-            <StatusPill label="۵ ریسک رصد شده" variant="alert" />
-          </div>
-          <div className="space-y-2">
-            {[
-              { title: 'نوسان کرایه کانتینری مسیر شانگهای-بندرعباس (+۱۸٫۷٪)', level: 'زیاد', sol: 'انتقال سفارش‌ها به ویتنام یا هند' },
-              { title: 'تعطیلات سال نوی چینی و کاهش ظرفیت بارگیری بنادر شرق چین', level: 'متوسط', sol: 'ثبت سفارش‌های سه‌ماهه اول پیش از دسامبر' },
-            ].map((r, idx) => (
-              <div key={idx} className="p-3 rounded-2xl bg-[#FDEBE6] border border-[#FADCD5] flex items-center justify-between text-xs">
-                <div>
-                  <div className="font-bold text-[#C53030]">{r.title}</div>
-                  <div className="text-[11px] text-[#73726E] mt-0.5">راهکار پیشنهادی: {r.sol}</div>
-                </div>
-                <span className="font-bold text-[#C53030] shrink-0 text-[11px]">
-                  ریسک {r.level}
-                </span>
+        {/* Active Risks Quick Summary */}
+        <div className="p-5 rounded-3xl bg-[#FFFFFF] border border-[#E5E3DC] flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-[#C53030]" />
+                <h4 className="text-sm font-bold text-[#111111]">اقدامات اضطراری کاهش ریسک (Action Plan)</h4>
               </div>
-            ))}
+              <StatusPill label="۵ ریسک رصد شده" variant="alert" />
+            </div>
+            <div className="space-y-2">
+              {[
+                { title: 'نوسان کرایه کانتینری مسیر شانگهای-بندرعباس (+۱۸٫۷٪)', level: 'بحرانی', sol: 'انتقال ۳۰٪ بار به خط مستقیم هایفونگ ویتنام' },
+                { title: 'احتمال واسطه‌گری کاغذی در معاملات هنگ‌کنگ', level: 'پایش ویژه', sol: 'الزام بازرسی میدانی و انطباق حساب بانکی سوئیفت' },
+              ].map((r, idx) => (
+                <div key={idx} className="p-3 rounded-2xl bg-[#FDEBE6] border border-[#FADCD5] flex items-center justify-between text-xs">
+                  <div>
+                    <div className="font-bold text-[#C53030]">{r.title}</div>
+                    <div className="text-[11px] text-[#73726E] mt-0.5">راهکار مصوب: {r.sol}</div>
+                  </div>
+                  <span className="font-bold text-[#C53030] shrink-0 text-[11px]">
+                    {r.level}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="pt-2 text-[11px] text-[#73726E] flex justify-between items-center">
+            <span>تحلیل ریسک متصل به ماژول پایش مستمر بازار</span>
+            <button
+              onClick={() => onNavigate('monitoring')}
+              className="text-[#111111] font-bold hover:underline"
+            >
+              مدیریت پرونده‌های پایش →
+            </button>
           </div>
         </div>
       </section>

@@ -17,6 +17,7 @@ import { PageId } from '../../types';
 import { HatchedFunnelStep } from '../common/HatchedBar';
 import { StatusPill } from '../common/StatusPill';
 import { toPersianDigits, formatPersianNumber, formatPersianPercent } from '../../utils/formatters';
+import { ProcurementDecisionMemoModal } from '../tools/ProcurementDecisionMemoModal';
 
 interface ReportsPageProps {
   onTriggerDownload: (filename: string, format: 'PDF' | 'XLSX' | 'CSV') => void;
@@ -31,6 +32,7 @@ export const ReportsPage: React.FC<ReportsPageProps> = ({
 }) => {
   const [autoSendEmail, setAutoSendEmail] = useState(true);
   const [autoSendWeekly, setAutoSendWeekly] = useState(true);
+  const [isDecisionMemoOpen, setIsDecisionMemoOpen] = useState(false);
 
   // Sourcing Funnel numbers
   const funnelSteps = [
@@ -326,8 +328,19 @@ export const ReportsPage: React.FC<ReportsPageProps> = ({
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Ready Reports (8 cols) */}
         <div className="lg:col-span-8 p-6 rounded-3xl bg-[#FFFFFF] border border-[#E5E3DC]">
-          <h4 className="text-base font-bold text-[#111111] mb-1">گزارش‌های آماده برای ارائه به هیئت مدیره</h4>
-          <p className="text-xs text-[#73726E] mb-4">اسناد رسمی تحلیلی تدوین‌شده با استانداردهای مدیریت خرید</p>
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+            <div>
+              <h4 className="text-base font-bold text-[#111111]">گزارش‌های آماده برای ارائه به هیئت مدیره</h4>
+              <p className="text-xs text-[#73726E] mt-0.5">اسناد رسمی تحلیلی تدوین‌شده با استانداردهای مدیریت خرید</p>
+            </div>
+            <button
+              onClick={() => setIsDecisionMemoOpen(true)}
+              className="px-4 py-2 rounded-full bg-[#111111] text-[#F3F94A] hover:bg-black text-xs font-bold flex items-center gap-1.5 transition-all"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>مشاهده صورت‌جلسه رسمی کمیسیون معاملات</span>
+            </button>
+          </div>
 
           <div className="space-y-3">
             {readyReports.map((rep) => (
@@ -419,6 +432,13 @@ export const ReportsPage: React.FC<ReportsPageProps> = ({
           </button>
         </div>
       </section>
+
+      {/* Procurement Decision Memorandum Modal */}
+      <ProcurementDecisionMemoModal
+        isOpen={isDecisionMemoOpen}
+        onClose={() => setIsDecisionMemoOpen(false)}
+        onDownload={() => onTriggerDownload('صورت‌جلسه_کمیسیون_معاملات_RFQ_0142', 'PDF')}
+      />
     </div>
   );
 };

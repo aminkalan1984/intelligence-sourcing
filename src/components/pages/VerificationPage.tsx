@@ -22,6 +22,8 @@ import { Supplier, PageId } from '../../types';
 import { StatusPill } from '../common/StatusPill';
 import { HatchedProgressBar } from '../common/HatchedBar';
 import { toPersianDigits, formatPersianNumber } from '../../utils/formatters';
+import { InspectionOrderModal } from '../tools/InspectionOrderModal';
+import { FakeSupplierDetectorModal } from '../tools/FakeSupplierDetectorModal';
 
 interface VerificationPageProps {
   supplier: Supplier;
@@ -41,6 +43,8 @@ export const VerificationPage: React.FC<VerificationPageProps> = ({
   onShowToast,
 }) => {
   const [selectedDoc, setSelectedDoc] = useState<string | null>(null);
+  const [isInspectionModalOpen, setIsInspectionModalOpen] = useState(false);
+  const [isFakeDetectorOpen, setIsFakeDetectorOpen] = useState(false);
 
   // 8 default verification layers if not explicitly present
   const layers = supplier.verificationLayers || [
@@ -86,7 +90,7 @@ export const VerificationPage: React.FC<VerificationPageProps> = ({
         </div>
 
         {/* Quick Supplier Selector & CTA */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 flex-wrap">
           <select
             value={supplier.id}
             onChange={(e) => {
@@ -104,11 +108,19 @@ export const VerificationPage: React.FC<VerificationPageProps> = ({
           </select>
 
           <button
-            onClick={() => onRequestSample(supplier)}
+            onClick={() => setIsFakeDetectorOpen(true)}
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-[#FFFFFF] border border-[#E5E3DC] hover:border-black text-[#111111] font-bold text-xs transition-all"
+          >
+            <AlertTriangle className="w-3.5 h-3.5 text-[#C05621]" />
+            <span>سنجش ضد جعل</span>
+          </button>
+
+          <button
+            onClick={() => setIsInspectionModalOpen(true)}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#111111] text-white hover:bg-black font-semibold text-xs tracking-tight transition-all active:scale-95"
           >
             <Send className="w-3.5 h-3.5 text-[#F3F94A]" />
-            <span>درخواست نمونه</span>
+            <span>سفارش بازرسی حضوری (PSI)</span>
           </button>
         </div>
       </section>
@@ -402,6 +414,27 @@ export const VerificationPage: React.FC<VerificationPageProps> = ({
           <strong className="text-[#111111]">یادآوری خط‌مشی سورسینگ:</strong> هوش مصنوعی و داده‌های پلتفرم به تنهایی تصمیم‌گیرنده نهایی نیستند. در قراردادهای بزرگ تجاری، تصمیم‌گیری‌های حساس مالی نیازمند اخذ نمونه فیزیکی، استعلام اصالت اسناد بانکی و بازرسی حضوری پیش از بارگیری (Pre-shipment Inspection) توسط بازرس شخص ثالث است.
         </p>
       </section>
+
+      {/* Inspection Booking Modal */}
+      <InspectionOrderModal
+        isOpen={isInspectionModalOpen}
+        onClose={() => setIsInspectionModalOpen(false)}
+        supplier={supplier}
+        onConfirmOrder={(agency, type) => {
+          onShowToast(
+            `سفارش بازرسی رسمی ثبت شد`,
+            `درخواست اعزام بازرس ${agency} به کارخانه ${supplier.name} در هایفونگ ارسال گردید. شماره رهگیری: PSI-${Math.floor(1000 + Math.random() * 9000)}`,
+            'success'
+          );
+        }}
+      />
+
+      {/* Fake Supplier Detector Modal */}
+      <FakeSupplierDetectorModal
+        isOpen={isFakeDetectorOpen}
+        onClose={() => setIsFakeDetectorOpen(false)}
+        suppliers={allSuppliers}
+      />
     </div>
   );
 };

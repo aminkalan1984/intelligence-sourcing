@@ -352,6 +352,97 @@ export const MarketsPage: React.FC<MarketsPageProps> = ({
         </div>
       </section>
 
+      {/* UN Comtrade & International Trade Flows Intelligence */}
+      <section className="bg-[#FFFFFF] p-6 rounded-3xl border border-[#E5E3DC]">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+          <div className="flex items-center gap-2">
+            <Globe className="w-5 h-5 text-[#111111]" />
+            <div>
+              <h4 className="text-base font-bold text-[#111111]">
+                پایگاه جریان‌های تجارت بین‌المللی (UN Comtrade & Customs Intelligence)
+              </h4>
+              <p className="text-xs text-[#73726E] mt-0.5">
+                داده‌های گمرکی رسمی مبادلات جهانی کالا طبق طبقه‌بندی سیستم هماهنگ‌شده (HS Code)
+              </p>
+            </div>
+          </div>
+          <span className="text-xs font-bold bg-[#F5F4EE] px-3 py-1.5 rounded-full border border-[#E5E3DC]">
+            داده‌های رسمی سازمان ملل (UN Comtrade ۲۰۲۴-۲۰۲۶)
+          </span>
+        </div>
+
+        {/* Bilateral Trade Flows Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div className="p-4 rounded-2xl bg-[#F5F4EE] border border-[#E5E3DC] space-y-1">
+            <span className="text-xs text-[#73726E] font-medium">حجم کل تجارت جهانی کد تعرفه ۷۲۱۰٫۴۹:</span>
+            <div className="text-2xl font-black text-[#111111]">۳۴٫۸ میلیارد دلار</div>
+            <span className="text-[11px] text-[#2D7D32] font-semibold">رشد سالانه +۴٫۲٪ در مبادلات آسیایی</span>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-[#F5F4EE] border border-[#E5E3DC] space-y-1">
+            <span className="text-xs text-[#73726E] font-medium">سهم بنادر مقصد خاورمیانه و ایران:</span>
+            <div className="text-2xl font-black text-[#111111]">۲٫۱ میلیون تن</div>
+            <span className="text-[11px] text-[#73726E]">تخلیه عمده در بنادر شهید رجایی و جبل علی</span>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-[#FDFDE8] border border-[#F3F94A] space-y-1">
+            <span className="text-xs text-[#111111] font-bold">بیشترین جهش سهم بازار صادراتی:</span>
+            <div className="text-2xl font-black text-[#111111]">ویتنام (+۳۱٪)</div>
+            <span className="text-[11px] text-[#111111]/80 font-medium">سریع‌ترین رشد ظرفیت نورد در جنوب شرق آسیا</span>
+          </div>
+        </div>
+
+        {/* Detailed Bilateral Comparison Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-right border-collapse text-xs">
+            <thead>
+              <tr className="bg-[#F5F4EE] border-b border-[#E5E3DC] text-[11px] font-bold text-[#73726E]">
+                <th className="py-2.5 px-4">کشور صادرکننده</th>
+                <th className="py-2.5 px-4">کد تعرفه HS</th>
+                <th className="py-2.5 px-4">ارزش صادرات سالانه به منطقه</th>
+                <th className="py-2.5 px-4">حقوق ورودی گمرکی مقصد</th>
+                <th className="py-2.5 px-4">زمان حمل دریایی/زمینی</th>
+                <th className="py-2.5 px-4">معاهدات تجاری و اسناد مبدأ</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#E5E3DC]">
+              <tr className="hover:bg-[#F5F4EE]/50">
+                <td className="py-3 px-4 font-bold text-[#111111]">ویتنام (Vietnam)</td>
+                <td className="py-3 px-4 font-mono">7210.49.00</td>
+                <td className="py-3 px-4 font-black">۴۸۰ میلیون دلار</td>
+                <td className="py-3 px-4">۵٪ (بدون عوارض ضد دامپینگ)</td>
+                <td className="py-3 px-4 text-[#2D7D32] font-semibold">۲۶ تا ۲۸ روز دریایی مستقیم</td>
+                <td className="py-3 px-4">گواهی مبدأ Form A رسمی اتاق بازرگانی</td>
+              </tr>
+              <tr className="hover:bg-[#F5F4EE]/50">
+                <td className="py-3 px-4 font-bold text-[#111111]">ترکیه (Turkey)</td>
+                <td className="py-3 px-4 font-mono">7210.49.00</td>
+                <td className="py-3 px-4 font-black">۳۴۰ میلیون دلار</td>
+                <td className="py-3 px-4">۴٪ (تخفیف موافقت‌نامه تجارت ترجیحی PTA)</td>
+                <td className="py-3 px-4 text-[#2D7D32] font-semibold">۶ تا ۱۸ روز ترانزیت جاده‌ای/ریلی</td>
+                <td className="py-3 px-4">گواهی بازرسی مشترک و ترخیص مرز رازی/بازرگان</td>
+              </tr>
+              <tr className="hover:bg-[#F5F4EE]/50">
+                <td className="py-3 px-4 font-bold text-[#111111]">چین (China)</td>
+                <td className="py-3 px-4 font-mono">7210.49.00</td>
+                <td className="py-3 px-4 font-black">۱٬۲۴۰ میلیون دلار</td>
+                <td className="py-3 px-4">۵٪ عوارض گمرکی</td>
+                <td className="py-3 px-4">۳۲ تا ۳۸ روز کانتینری</td>
+                <td className="py-3 px-4">اسناد رسمی CCPIT و تراز تجاری یوان/ریال</td>
+              </tr>
+              <tr className="hover:bg-[#F5F4EE]/50">
+                <td className="py-3 px-4 font-bold text-[#111111]">هند (India)</td>
+                <td className="py-3 px-4 font-mono">7210.49.00</td>
+                <td className="py-3 px-4 font-black">۲۹۰ میلیون دلار</td>
+                <td className="py-3 px-4">۵٪ عوارض ورودی</td>
+                <td className="py-3 px-4 text-[#2D7D32] font-semibold">۱۴ تا ۲۰ روز دریایی ناوا شیوا</td>
+                <td className="py-3 px-4">کانال تسویه حساب بانکی Vostro با روپیه</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       {/* Risk Matrix & AI Recommendation Card */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Risk Matrix (7 cols) */}
