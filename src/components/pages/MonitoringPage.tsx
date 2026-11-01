@@ -19,6 +19,7 @@ import { MonitoringAlert, ProductSpec, PageId } from '../../types';
 import { StatusPill } from '../common/StatusPill';
 import { Sparkline } from '../common/Sparkline';
 import { toPersianDigits, formatPersianNumber } from '../../utils/formatters';
+import { LiveMarketTicker } from '../market/LiveMarketTicker';
 
 interface MonitoringPageProps {
   alerts: MonitoringAlert[];
@@ -103,6 +104,9 @@ export const MonitoringPage: React.FC<MonitoringPageProps> = ({
           </button>
         </div>
       </section>
+
+      {/* Live Market Indicators Ticker */}
+      <LiveMarketTicker onShowToast={onShowToast} showScenarioPills={true} />
 
       {/* Featured Alert Hero Card */}
       <section className="p-6 rounded-3xl bg-[#FDFDE8] border-2 border-[#F3F94A] relative overflow-hidden">

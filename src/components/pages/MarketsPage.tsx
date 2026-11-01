@@ -16,6 +16,8 @@ import { Sparkline } from '../common/Sparkline';
 import { StatusPill } from '../common/StatusPill';
 import { HatchedProgressBar } from '../common/HatchedBar';
 import { toPersianDigits, formatPersianNumber, formatPersianPercent } from '../../utils/formatters';
+import { LiveMarketTicker } from '../market/LiveMarketTicker';
+import { LiveMarketMatrix } from '../market/LiveMarketMatrix';
 
 interface MarketsPageProps {
   markets: MarketAlternative[];
@@ -48,6 +50,12 @@ export const MarketsPage: React.FC<MarketsPageProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* Live Market Ticker & Scenario Controls */}
+      <LiveMarketTicker onShowToast={onShowToast} showScenarioPills={true} />
+
+      {/* 5-Pillar Connected Market Data Matrix */}
+      <LiveMarketMatrix onShowToast={onShowToast} />
+
       {/* Top Banner & Timeframe Toggle */}
       <section className="bg-[#FFFFFF] p-6 rounded-3xl border border-[#E5E3DC] flex items-center justify-between flex-wrap gap-4">
         <div>

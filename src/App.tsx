@@ -21,6 +21,7 @@ import { MonitoringPage } from './components/pages/MonitoringPage';
 import { ReportsPage } from './components/pages/ReportsPage';
 import { SettingsPage } from './components/pages/SettingsPage';
 import { ToastContainer, ToastMessage } from './components/common/Toast';
+import { MarketDataProvider } from './context/MarketDataContext';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageId>('dashboard');
@@ -131,7 +132,8 @@ export default function App() {
   };
 
   return (
-    <Shell
+    <MarketDataProvider>
+      <Shell
       currentPage={currentPage}
       onNavigate={handleNavigate}
       products={products}
@@ -249,5 +251,6 @@ export default function App() {
       {/* Floating Toast Notification Container */}
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
     </Shell>
-  );
+  </MarketDataProvider>
+);
 }

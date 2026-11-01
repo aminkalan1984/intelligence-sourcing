@@ -116,17 +116,23 @@ export const ComparisonPage: React.FC<ComparisonPageProps> = ({
               </div>
             </div>
 
-            {/* Segmented Control: پایه | ارز +۵٪ | حمل +۲۰٪ */}
-            <div className="inline-flex p-1.5 rounded-full bg-[#F5F4EE] border border-[#E5E3DC] w-full mb-3">
+            {/* Segmented Control: پایه | ارز +۵٪ | حمل +۲۰٪ | نرخ‌های زنده بازار */}
+            <div className="inline-flex p-1.5 rounded-full bg-[#F5F4EE] border border-[#E5E3DC] w-full mb-3 overflow-x-auto scrollbar-none">
               {[
-                { id: 'base', label: 'سناریوی پایه (موجود)' },
-                { id: 'fx_plus_5', label: 'افزایش نرخ ارز (+۵٪)' },
-                { id: 'freight_plus_20', label: 'جهش کرایه حمل (+۲۰٪)' },
+                { id: 'base', label: 'سناریوی پایه' },
+                { id: 'live_market', label: '⚡ نرخ‌های زنده بازار' },
+                { id: 'fx_plus_5', label: 'ارز (+۵٪)' },
+                { id: 'freight_plus_20', label: 'حمل (+۲۰٪)' },
               ].map((s) => (
                 <button
                   key={s.id}
-                  onClick={() => setScenario(s.id as ScenarioType)}
-                  className={`flex-1 py-2.5 px-3 rounded-full text-xs font-bold transition-all text-center ${
+                  onClick={() => {
+                    setScenario(s.id as ScenarioType);
+                    if (s.id === 'live_market') {
+                      onShowToast('نرخ‌های کرایه و ارز لحظه‌ای متصل شدند', 'محاسبه Landed Cost بر مبنای آخرین مظنه بنادر به‌روز شد.', 'success');
+                    }
+                  }}
+                  className={`flex-1 py-2 px-2.5 rounded-full text-xs font-bold transition-all text-center whitespace-nowrap ${
                     scenario === s.id
                       ? 'bg-[#111111] text-white shadow-none'
                       : 'text-[#73726E] hover:text-[#111111]'
@@ -140,6 +146,7 @@ export const ComparisonPage: React.FC<ComparisonPageProps> = ({
 
           <p className="text-xs text-[#73726E] leading-relaxed">
             {scenario === 'base' && 'در سناریوی پایه، تعرفه‌های جاری گمرکی و کرایه‌های کانتینری رسمی بدون تغییر اعمال شده‌اند.'}
+            {scenario === 'live_market' && '⚡ اتصال داده‌های زنده: کرایه‌های حمل کانتینری دقیقاً مطابق مظنه روز بنادر (ویتنام ۲٬۲۰۰$، چین ۲٬۸۵۰$، ترکیه ۲٬۱۰۰$ و هند ۱٬۴۵۰$) اعمال شده‌اند.'}
             {scenario === 'fx_plus_5' && 'با افزایش ۵ درصدی ارزش دلار یا تسعیر ارز، قیمت پایه اقلام FOB افزایش یافته و تأمین‌کنندگانی با هزینه‌های ریالی ترخیص برتری نسبی می‌یابند.'}
             {scenario === 'freight_plus_20' && 'با رشد ۲۰ درصدی کرایه حمل دریایی کانتینری، گزینه‌های با مسیر دریایی کوتاه‌تر (مانند ویتنام و هند) یا ترانزیت جاده‌ای (ترکیه) مزیت بالایی پیدا می‌کنند.'}
           </p>

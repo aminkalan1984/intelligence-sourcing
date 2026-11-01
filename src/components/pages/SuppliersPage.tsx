@@ -17,6 +17,7 @@ import { StatusPill } from '../common/StatusPill';
 import { HatchedProgressBar } from '../common/HatchedBar';
 import { toPersianDigits, formatPersianNumber } from '../../utils/formatters';
 import { FakeSupplierDetectorModal } from '../tools/FakeSupplierDetectorModal';
+import { SupplierManagementModal } from '../suppliers/SupplierManagementModal';
 
 interface SuppliersPageProps {
   suppliers: Supplier[];
@@ -40,6 +41,7 @@ export const SuppliersPage: React.FC<SuppliersPageProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'trust' | 'lead' | 'price'>('trust');
   const [isFakeDetectorOpen, setIsFakeDetectorOpen] = useState(false);
+  const [managingSupplier, setManagingSupplier] = useState<Supplier | null>(null);
 
   // Filtered & Sorted suppliers
   const filteredSuppliers = useMemo(() => {
@@ -343,15 +345,18 @@ export const SuppliersPage: React.FC<SuppliersPageProps> = ({
                     <div className="flex items-center justify-center gap-1.5">
                       <button
                         onClick={() => {
+                          setManagingSupplier(supplier);
                           onSelectSupplier(supplier);
-                          onNavigate('verification', supplier.id);
                         }}
-                        className="px-3.5 py-1.5 rounded-full bg-[#111111] text-white hover:bg-black text-xs font-bold transition-all"
+                        className="px-3.5 py-1.5 rounded-full bg-[#111111] text-white hover:bg-black text-xs font-bold transition-all shadow-none"
                       >
-                        مشاهده
+                        مدیریت جامع
                       </button>
                       <button
-                        onClick={() => onAddToRFQ(supplier)}
+                        onClick={() => {
+                          onAddToRFQ(supplier);
+                          onShowToast('به استعلام اضافه شد', `${supplier.name} به استعلام قیمت افزوده شد.`, 'success');
+                        }}
                         title="افزودن به استعلام قیمت"
                         className="w-8 h-8 rounded-full bg-[#F5F4EE] hover:bg-[#E5E3DC] border border-[#E5E3DC] flex items-center justify-center text-[#111111] transition-colors"
                       >
@@ -442,6 +447,20 @@ export const SuppliersPage: React.FC<SuppliersPageProps> = ({
         isOpen={isFakeDetectorOpen}
         onClose={() => setIsFakeDetectorOpen(false)}
         suppliers={suppliers}
+      />
+
+      {/* Comprehensive Supplier Management Modal */}
+      <SupplierManagementModal
+        supplier={managingSupplier}
+        isOpen={Boolean(managingSupplier)}
+        onClose={() => setManagingSupplier(null)}
+        onAddToRFQ={onAddToRFQ}
+        onOrderInspection={(s) => {
+          setManagingSupplier(null);
+          onSelectSupplier(s);
+          onNavigate('verification', s.id);
+        }}
+        onShowToast={onShowToast}
       />
     </div>
   );

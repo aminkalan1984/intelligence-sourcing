@@ -16,6 +16,7 @@ import { Sparkline } from '../common/Sparkline';
 import { StatusPill } from '../common/StatusPill';
 import { toPersianDigits, formatPersianNumber } from '../../utils/formatters';
 import { SupplyRiskMatrix } from '../dashboard/SupplyRiskMatrix';
+import { LiveMarketTicker } from '../market/LiveMarketTicker';
 
 interface DashboardPageProps {
   onNavigate: (page: PageId, targetId?: string) => void;
@@ -59,6 +60,9 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* Live Market Indicators Ticker Bar */}
+      <LiveMarketTicker showScenarioPills={false} />
+
       {/* 7 KPI Cards in Bento-grid row */}
       <section className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3.5" aria-label="شاخص‌های کلیدی عملکرد">
         {kpis.map((kpi, idx) => (

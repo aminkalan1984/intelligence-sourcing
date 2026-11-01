@@ -102,6 +102,13 @@ export const SupplyRiskMatrix: React.FC<SupplyRiskMatrixProps> = ({
   const [activeHoveredRisk, setActiveHoveredRisk] = useState<SupplyRiskItem | null>(
     DEFAULT_RISKS[0]
   );
+  const [hoveredRisk, setHoveredRisk] = useState<SupplyRiskItem | null>(null);
+  const [tooltipCoords, setTooltipCoords] = useState<{
+    xPercent: number;
+    yPercent: number;
+    isTop: boolean;
+    clampedX: number;
+  } | null>(null);
 
   const filteredRisks = DEFAULT_RISKS.filter((r) => {
     if (selectedCategory === 'همه') return true;
@@ -300,21 +307,23 @@ export const SupplyRiskMatrix: React.FC<SupplyRiskMatrixProps> = ({
               const cx = mapLikelihoodToX(risk.likelihood);
               const cy = mapImpactToY(risk.impact);
               const isSelected = activeHoveredRisk?.id === risk.id;
+              const isHovered = hoveredRisk?.id === risk.id;
+              const isDimmed = Boolean(hoveredRisk && !isHovered);
 
               // Color based on quadrant
               let fillColor = '#F3F94A';
               let strokeColor = '#111111';
               if (risk.quadrant === 'بحرانی') {
-                fillColor = isSelected ? '#C53030' : '#E04848';
+                fillColor = isSelected || isHovered ? '#C53030' : '#E04848';
                 strokeColor = '#111111';
               } else if (risk.quadrant === 'پایش ویژه') {
-                fillColor = isSelected ? '#C05621' : '#F5DFCB';
+                fillColor = isSelected || isHovered ? '#C05621' : '#F5DFCB';
                 strokeColor = '#C05621';
               } else if (risk.quadrant === 'کم‌خطر') {
-                fillColor = isSelected ? '#2D7D32' : '#D5E8D4';
+                fillColor = isSelected || isHovered ? '#2D7D32' : '#D5E8D4';
                 strokeColor = '#2D7D32';
               } else {
-                fillColor = isSelected ? '#111111' : '#F3F94A';
+                fillColor = isSelected || isHovered ? '#111111' : '#F3F94A';
                 strokeColor = '#111111';
               }
 
@@ -322,11 +331,45 @@ export const SupplyRiskMatrix: React.FC<SupplyRiskMatrixProps> = ({
                 <g
                   key={risk.id}
                   onClick={() => setActiveHoveredRisk(risk)}
-                  onMouseEnter={() => setActiveHoveredRisk(risk)}
-                  className="cursor-pointer"
+                  onMouseEnter={() => {
+                    setActiveHoveredRisk(risk);
+                    setHoveredRisk(risk);
+                    const rawXPercent = (cx / 620) * 100;
+                    const rawYPercent = (cy / 375) * 100;
+                    const clampedX = Math.max(22, Math.min(78, rawXPercent));
+                    setTooltipCoords({
+                      xPercent: rawXPercent,
+                      yPercent: rawYPercent,
+                      isTop: cy > 135,
+                      clampedX,
+                    });
+                  }}
+                  onMouseLeave={() => {
+                    setHoveredRisk(null);
+                    setTooltipCoords(null);
+                  }}
+                  className="cursor-pointer transition-all duration-300"
+                  style={{
+                    opacity: isDimmed ? 0.35 : 1,
+                  }}
                 >
-                  {/* Subtle outer static ring for selected or critical bubble */}
-                  {isSelected && (
+                  {/* Glowing animated outer ring on hover */}
+                  {isHovered && (
+                    <circle
+                      cx={cx}
+                      cy={cy}
+                      r={risk.bubbleRadius + 8}
+                      fill="none"
+                      stroke={risk.quadrant === 'بحرانی' ? '#C53030' : strokeColor}
+                      strokeWidth="2.5"
+                      strokeDasharray="4 3"
+                      className="animate-pulse"
+                      opacity="0.9"
+                    />
+                  )}
+
+                  {/* Subtle static ring for selected bubble when not hovered */}
+                  {isSelected && !isHovered && (
                     <circle
                       cx={cx}
                       cy={cy}
@@ -346,10 +389,18 @@ export const SupplyRiskMatrix: React.FC<SupplyRiskMatrixProps> = ({
                     r={risk.bubbleRadius}
                     fill={fillColor}
                     stroke={strokeColor}
-                    strokeWidth={isSelected ? 3 : 1.5}
+                    strokeWidth={isHovered ? 3.5 : isSelected ? 3 : 1.5}
                     style={{
                       transformOrigin: `${cx}px ${cy}px`,
-                      transition: 'transform 0.2s ease, fill 0.2s ease',
+                      transform: isHovered
+                        ? 'scale(1.18)'
+                        : isSelected
+                        ? 'scale(1.06)'
+                        : 'scale(1)',
+                      transition: 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), fill 0.2s ease, stroke 0.2s ease',
+                      filter: isHovered
+                        ? 'drop-shadow(0 6px 14px rgba(0,0,0,0.25))'
+                        : undefined,
                     }}
                   />
 
@@ -360,12 +411,18 @@ export const SupplyRiskMatrix: React.FC<SupplyRiskMatrixProps> = ({
                     fontSize={risk.bubbleRadius > 22 ? '11' : '9'}
                     fontWeight="900"
                     fill={
-                      risk.quadrant === 'بحرانی' || (isSelected && risk.quadrant !== 'عملیاتی')
+                      risk.quadrant === 'بحرانی' ||
+                      ((isSelected || isHovered) && risk.quadrant !== 'عملیاتی')
                         ? '#FFFFFF'
                         : '#111111'
                     }
                     textAnchor="middle"
                     className="pointer-events-none select-none"
+                    style={{
+                      transformOrigin: `${cx}px ${cy}px`,
+                      transform: isHovered ? 'scale(1.12)' : 'scale(1)',
+                      transition: 'transform 0.25s ease',
+                    }}
                   >
                     {toPersianDigits(Math.round(risk.financialExposureUSD / 1000))}k$
                   </text>
@@ -373,6 +430,97 @@ export const SupplyRiskMatrix: React.FC<SupplyRiskMatrixProps> = ({
               );
             })}
           </svg>
+
+          {/* Floating Interactive Tooltip */}
+          {hoveredRisk && tooltipCoords && (
+            <div
+              className="absolute z-30 pointer-events-none transition-all duration-200 ease-out select-none animate-in fade-in zoom-in-95"
+              style={{
+                left: `${tooltipCoords.clampedX}%`,
+                top: `${tooltipCoords.yPercent}%`,
+                transform: `translate(-50%, ${tooltipCoords.isTop ? 'calc(-100% - 16px)' : '24px'})`,
+                maxWidth: '320px',
+                width: 'max-content',
+                minWidth: '280px',
+              }}
+            >
+              <div className="bg-[#111111] text-white p-3.5 rounded-2xl shadow-2xl border border-white/15 text-right relative">
+                {/* Header: Status Pill & Category */}
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <div className="flex items-center gap-1.5">
+                    <span
+                      className={`w-2 h-2 rounded-full ${
+                        hoveredRisk.quadrant === 'بحرانی'
+                          ? 'bg-[#C53030] animate-ping'
+                          : hoveredRisk.quadrant === 'پایش ویژه'
+                          ? 'bg-[#C05621]'
+                          : hoveredRisk.quadrant === 'کم‌خطر'
+                          ? 'bg-[#2D7D32]'
+                          : 'bg-[#F3F94A]'
+                      }`}
+                    />
+                    <span className="text-[11px] font-black text-[#F3F94A]">
+                      ناحیه {hoveredRisk.quadrant}
+                    </span>
+                  </div>
+                  <span className="text-[10px] bg-white/15 px-2.5 py-0.5 rounded-full text-white/90 font-bold">
+                    دسته‌بندی: {hoveredRisk.category}
+                  </span>
+                </div>
+
+                {/* Risk Name (نام ریسک) */}
+                <h5 className="text-xs font-black text-white leading-snug mb-2">
+                  {hoveredRisk.title}
+                </h5>
+
+                {/* Mitigation Strategy (راهکار مقابله) */}
+                <div className="bg-white/10 rounded-xl p-2.5 mb-2.5 border border-white/10">
+                  <div className="text-[10px] text-[#F3F94A] font-bold mb-1 flex items-center gap-1">
+                    <ShieldAlert className="w-3.5 h-3.5 text-[#F3F94A] shrink-0" />
+                    <span>راهکار مقابله و اقدام مصوب:</span>
+                  </div>
+                  <p className="text-[11px] text-[#ECEBE5] leading-relaxed font-normal">
+                    {hoveredRisk.mitigation}
+                  </p>
+                </div>
+
+                {/* 3 Key Metrics Inset */}
+                <div className="grid grid-cols-3 gap-1.5 text-center pt-2 border-t border-white/10">
+                  <div className="bg-white/5 py-1 px-1 rounded-lg">
+                    <span className="text-[9px] text-white/60 block">احتمال وقوع</span>
+                    <span className="text-[11px] font-black text-white">
+                      {toPersianDigits(hoveredRisk.likelihood)}٪
+                    </span>
+                  </div>
+                  <div className="bg-white/5 py-1 px-1 rounded-lg">
+                    <span className="text-[9px] text-white/60 block">تأثیر بر کار</span>
+                    <span className="text-[11px] font-black text-[#F3F94A]">
+                      {toPersianDigits(hoveredRisk.impact)}٪
+                    </span>
+                  </div>
+                  <div className="bg-white/5 py-1 px-1 rounded-lg">
+                    <span className="text-[9px] text-white/60 block">مواجهه مالی</span>
+                    <span className="text-[11px] font-black text-white">
+                      {toPersianDigits(Math.round(hoveredRisk.financialExposureUSD / 1000))}k $
+                    </span>
+                  </div>
+                </div>
+
+                {/* Tooltip Arrow Pointer */}
+                <div
+                  className={`absolute w-3.5 h-3.5 bg-[#111111] rotate-45 border-white/15 ${
+                    tooltipCoords.isTop
+                      ? 'bottom-[-7px] border-r border-b'
+                      : 'top-[-7px] border-l border-t'
+                  }`}
+                  style={{
+                    left: `calc(50% + ${tooltipCoords.xPercent - tooltipCoords.clampedX}%)`,
+                    transform: 'translateX(-50%) rotate(45deg)',
+                  }}
+                />
+              </div>
+            </div>
+          )}
 
           {/* Quick legend under the chart */}
           <div className="flex items-center justify-between text-[11px] text-[#73726E] pt-2 border-t border-[#E5E3DC]">

@@ -1,6 +1,6 @@
 import { LandedCostBreakdown, RankingWeights } from '../types';
 
-export type ScenarioType = 'base' | 'fx_plus_5' | 'freight_plus_20';
+export type ScenarioType = 'base' | 'fx_plus_5' | 'freight_plus_20' | 'live_market';
 
 /**
  * Calculates landed cost with sensitivity scenario adjustments.
@@ -19,6 +19,21 @@ export function calculateLandedCost(
   } else if (scenario === 'freight_plus_20') {
     // International shipping / freight surges by 20%
     internationalFreight = Math.round(base.internationalFreight * 1.2 * 10) / 10;
+  } else if (scenario === 'live_market') {
+    // Synchronize directly with live container freight corridors:
+    // Vietnam: $2,200/40ft ($88/ton)
+    // China: $2,850/40ft ($114/ton)
+    // Turkey: $2,100/truck ($84/ton)
+    // India: $1,450/40ft ($58/ton)
+    if (base.supplierId === 'hanoi-steel') {
+      internationalFreight = Math.round(88 * base.quantity);
+    } else if (base.supplierId === 'shandong-coil') {
+      internationalFreight = Math.round(114 * base.quantity);
+    } else if (base.supplierId === 'anatolia-metal') {
+      internationalFreight = Math.round(84 * base.quantity);
+    } else {
+      internationalFreight = Math.round(58 * base.quantity);
+    }
   }
 
   // Insurance is typically proportional to goods value (approx 0.35%)

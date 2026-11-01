@@ -40,6 +40,52 @@ export interface SupplierReview {
   orderVolume: string;
 }
 
+export interface ProductionCapacityDetails {
+  annualCapacity: number;
+  monthlyCapacity: number;
+  unit: string;
+  activeLinesCount: number;
+  utilizationRate: number; // 0-100
+  factoryAreaM2: string;
+  leadTimeDays: number;
+  equipmentMakers: string[];
+  warehouseCapacityTons: number;
+}
+
+export interface PerformanceScorecard {
+  overallScore: number; // 0-100
+  onTimeDeliveryRate: number; // e.g. 98.2%
+  qualityPassRate: number; // e.g. 99.4%
+  rfqResponseHours: number; // e.g. 3.5 hrs
+  priceStabilityScore: number; // 0-100
+  sampleApprovalRate: number; // e.g. 100%
+  historicalOrdersCount: number;
+}
+
+export interface RiskAssessmentDetails {
+  overallRiskLevel: 'کم‌خطر' | 'ریسک متوسط' | 'ریسک بالا' | 'بحرانی';
+  financialStabilityScore: number; // 0-100
+  fraudShellRiskScore: number; // 0-100 (low = safe)
+  geopoliticalLogisticsRisk: number; // 0-100
+  legalDisputeRecordsCount: number;
+  riskSummaryFa: string;
+  mitigationRecommendation: string;
+}
+
+export interface CooperationRecord {
+  id: string;
+  orderNumber: string;
+  date: string;
+  productName: string;
+  volumeTons: number;
+  totalAmountUSD: number;
+  incoterm: string;
+  blNumber: string;
+  status: 'تحویل‌شده و تسویه‌شده' | 'در حال حمل دریایی' | 'در مرحله ترخیص گمرکی' | 'سفارش در جریان تولید';
+  qualityRating: number; // 1-5
+  notes: string;
+}
+
 export interface Supplier {
   id: string;
   name: string; // Latin name
@@ -75,6 +121,10 @@ export interface Supplier {
     status: 'حل‌شده' | 'در حال پیگیری';
   }[];
   reviews?: SupplierReview[];
+  productionDetails?: ProductionCapacityDetails;
+  performanceScorecard?: PerformanceScorecard;
+  riskAssessment?: RiskAssessmentDetails;
+  cooperationHistory?: CooperationRecord[];
 }
 
 export interface ProductSpec {
