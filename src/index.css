@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Vazirmatn', Tahoma, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #ECEBE5;
+    color: #111111;
+  }
+}
+
+/* Custom 45-degree diagonal hatched stripe pattern */
+.bg-hatched-pattern {
+  background-color: transparent;
+  background-image: repeating-linear-gradient(
+    45deg,
+    #D0CEBE 0,
+    #D0CEBE 2px,
+    transparent 0,
+    transparent 8px
+  );
+}
+
+.bg-hatched-pattern-dense {
+  background-color: transparent;
+  background-image: repeating-linear-gradient(
+    45deg,
+    #D0CEBE 0,
+    #D0CEBE 1.5px,
+    transparent 0,
+    transparent 5px
+  );
+}
+
+.bg-hatched-pattern-dark {
+  background-image: repeating-linear-gradient(
+    45deg,
+    #8C897B 0,
+    #8C897B 2px,
+    transparent 0,
+    transparent 8px
+  );
+}
+
+/* Hide scrollbars for clean pills row */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

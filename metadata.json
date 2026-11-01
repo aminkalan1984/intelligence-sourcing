@@ -1,0 +1,6 @@
+{
+  "name": "SourcingIQ",
+  "description": "پلتفرم هوشمند کشف، ارزیابی و بهینه‌سازی تأمین‌کنندگان بین‌المللی برای واردکنندگان تجاری",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
